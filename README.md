@@ -1,1 +1,1 @@
-nothing much, just trying to build a program that resopnce with movie clips
+Nothing much, just trying to build a program that responds with movie clips.
