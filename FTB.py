@@ -52,7 +52,7 @@ if not os.path.exists(clip_folder) or not os.listdir(clip_folder):
     print(f"'{clip_folder}' folder doesn't exist or is empty. Please select a clip folder.")
     clip_folder = select_folder()
 
-# List all files in the selected folder
+# List all files in the selected folder (read filenames only)
 clip_files = [f for f in os.listdir(clip_folder) if os.path.isfile(os.path.join(clip_folder, f))]
 
 if not clip_files:
