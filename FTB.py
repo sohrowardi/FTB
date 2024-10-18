@@ -2,6 +2,7 @@ import os
 import random
 import nltk
 from moviepy.editor import VideoFileClip
+from tkinter import Tk, filedialog
 
 # Download NLTK resources
 nltk.download('punkt')
@@ -12,11 +13,26 @@ def similarity(string1, string2):
     max_len = max(len(string1), len(string2))
     return 1 - (edit_distance / max_len)
 
+# Function to select a folder using a file dialog if .clips folder doesn't exist or is empty
+def select_folder():
+    Tk().withdraw()  # Hide the root window
+    folder_selected = filedialog.askdirectory(title="Select the Clip Folder")
+    return folder_selected
+
 # Folder containing clips (relative path)
 clip_folder = ".clips"
 
-# List all files in the folder
+# Check if the folder exists and contains clips
+if not os.path.exists(clip_folder) or not os.listdir(clip_folder):
+    print(f"'{clip_folder}' folder doesn't exist or is empty. Please select a clip folder.")
+    clip_folder = select_folder()
+
+# List all files in the selected folder
 clip_files = [f for f in os.listdir(clip_folder) if os.path.isfile(os.path.join(clip_folder, f))]
+
+if not clip_files:
+    print(f"No clips found in the folder: {clip_folder}")
+    exit()
 
 # Continuously ask for user input
 while True:
@@ -51,5 +67,3 @@ while True:
     
     # Close the video preview window
     clip.close()
-
-#worked
