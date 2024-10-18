@@ -3,9 +3,13 @@ import random
 import nltk
 from moviepy.editor import VideoFileClip
 from tkinter import Tk, filedialog
+import speech_recognition as sr  # For voice recognition
 
 # Download NLTK resources
 nltk.download('punkt')
+
+# Initialize the speech recognizer
+recognizer = sr.Recognizer()
 
 # Function to calculate similarity between two strings using NLTK's edit distance
 def similarity(string1, string2):
@@ -18,6 +22,35 @@ def select_folder():
     Tk().withdraw()  # Hide the root window
     folder_selected = filedialog.askdirectory(title="Select the Clip Folder")
     return folder_selected
+
+# Function to get voice input
+def get_voice_input():
+    with sr.Microphone() as source:
+        print("Listening... Please say your phrase:")
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+        try:
+            print("Recognizing...")
+            return recognizer.recognize_google(audio).lower()
+        except sr.UnknownValueError:
+            print("Sorry, I could not understand the audio.")
+            return None
+        except sr.RequestError:
+            print("Sorry, the service is unavailable.")
+            return None
+
+# Function to get user input (either text or voice)
+def get_user_input():
+    while True:
+        method = input("Would you like to (1) type or (2) speak your phrase? Enter 1 or 2: ")
+        if method == '1':
+            return input("Enter a phrase: ").lower()
+        elif method == '2':
+            voice_input = get_voice_input()
+            if voice_input:
+                return voice_input
+        else:
+            print("Invalid choice. Please enter 1 or 2.")
 
 # Folder containing clips (relative path)
 clip_folder = ".clips"
@@ -36,8 +69,8 @@ if not clip_files:
 
 # Continuously ask for user input
 while True:
-    user_input = input("Enter a phrase: ").lower()  # Convert input to lowercase for case-insensitivity
-    
+    user_input = get_user_input()  # Get either text or voice input
+
     # Find the clip filenames with the highest similarity to the user input
     max_similarity = -1
     matching_clips = []
