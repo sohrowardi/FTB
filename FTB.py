@@ -23,7 +23,7 @@ def select_folder():
     folder_selected = filedialog.askdirectory(title="Select the Clip Folder")
     return folder_selected
 
-# Function to get voice input
+# Function to handle voice input
 def get_voice_input():
     with sr.Microphone() as source:
         print("Listening... Please say your phrase:")
@@ -31,7 +31,8 @@ def get_voice_input():
         audio = recognizer.listen(source)
         try:
             print("Recognizing...")
-            return recognizer.recognize_google(audio).lower()
+            voice_input = recognizer.recognize_google(audio).lower()
+            return voice_input
         except sr.UnknownValueError:
             print("Sorry, I could not understand the audio.")
             return None
@@ -39,18 +40,9 @@ def get_voice_input():
             print("Sorry, the service is unavailable.")
             return None
 
-# Function to get user input (either text or voice)
-def get_user_input():
-    while True:
-        method = input("Would you like to (1) type or (2) speak your phrase? Enter 1 or 2: ")
-        if method == '1':
-            return input("Enter a phrase: ").lower()
-        elif method == '2':
-            voice_input = get_voice_input()
-            if voice_input:
-                return voice_input
-        else:
-            print("Invalid choice. Please enter 1 or 2.")
+# Function to handle text input
+def get_text_input():
+    return input("Enter a phrase: ").lower()
 
 # Folder containing clips (relative path)
 clip_folder = ".clips"
@@ -67,9 +59,27 @@ if not clip_files:
     print(f"No clips found in the folder: {clip_folder}")
     exit()
 
-# Continuously ask for user input
+# Prompt the user for the input method once
 while True:
-    user_input = get_user_input()  # Get either text or voice input
+    choice = input("Would you like to (1) type or (2) speak your phrase? Enter 1 or 2: ")
+    if choice == "1":
+        input_method = "text"
+        break
+    elif choice == "2":
+        input_method = "voice"
+        break
+    else:
+        print("Invalid choice. Please enter 1 for text or 2 for voice.")
+
+# Main loop to process user input
+while True:
+    # Get user input based on the chosen method
+    if input_method == "text":
+        user_input = get_text_input()
+    elif input_method == "voice":
+        user_input = get_voice_input()
+        if not user_input:  # If voice input failed, ask again
+            continue
 
     # Find the clip filenames with the highest similarity to the user input
     max_similarity = -1
