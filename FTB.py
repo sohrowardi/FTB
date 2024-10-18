@@ -13,7 +13,7 @@ def similarity(string1, string2):
     return 1 - (edit_distance / max_len)
 
 # Folder containing clips (relative path)
-clip_folder = "clips"
+clip_folder = ".clips"
 
 # List all files in the folder
 clip_files = [f for f in os.listdir(clip_folder) if os.path.isfile(os.path.join(clip_folder, f))]
